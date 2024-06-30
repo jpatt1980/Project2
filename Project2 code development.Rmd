@@ -1,0 +1,145 @@
+```{r}
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(scales)
+
+```
+
+```{r Type 1 of 6 Agency Code Key}
+
+agency_key_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/awards/count")
+
+agency_key_parsed <- jsonlite::fromJSON(rawToChar(agency_key_raw$content))
+
+agency_key_df <- as_tibble(agency_key_parsed$results[[1]]) |>
+  rename("agency_name" = awarding_toptier_agency_name,
+         "agency_code" = awarding_toptier_agency_code) 
+
+agency_key_df$agency_code <- as.numeric(agency_key_df$agency_code)
+
+agency_key <- agency_key_df
+
+agency_key
+  
+
+```
+
+
+```{r Data type 2 of 6 Agency Budget and Obligations}
+
+agency_budget_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/012/budgetary_resources/")
+
+agency_budget_parsed <- jsonlite::fromJSON(rawToChar(agency_budget_raw$content))
+
+agency_budget_df <- as_tibble(agency_budget_parsed$agency_data_by_year) |>
+  select(fiscal_year:total_budgetary_resources) |>
+  rename("agency_budget" = agency_budgetary_resources,
+         "agency_obligations" = agency_total_obligated) |>
+  mutate("agency_code" = 12, .before = fiscal_year)
+
+agency_budget <- agency_key |>
+  select(agency_name, agency_code) |>
+  right_join(agency_budget_df, join_by(agency_code)) 
+
+             
+agency_budget 
+
+```
+
+
+```{r data type 3 of 6 Agency Obligations}
+
+agency_account_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/012/federal_account/")
+
+agency_account_parsed <- jsonlite::fromJSON(rawToChar(agency_account_raw$content))
+
+agency_account_df <- as_tibble(agency_account_parsed$results) |>
+  select(code, name, obligated_amount, gross_outlay_amount) |>
+  mutate("agency_code" = 12, .before = code)
+
+agency_account <- agency_key |>
+  select(agency_name, agency_code) |>
+  right_join(agency_account_df, join_by(agency_code))
+
+agency_account
+
+```
+
+
+```{r Data type 4 of 6 Agency Obligation Class}
+
+agency_object_class_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/012/object_class")
+
+agency_object_class_parsed <- jsonlite::fromJSON(rawToChar(agency_object_class_raw$content))
+
+agency_object_class_df <- as_tibble(agency_object_class_parsed$results) |>
+  mutate("agency_code" = 12, .before = name)
+
+agency_object <- agency_key |>
+  select(agency_name, agency_code) |>
+  right_join(agency_object_class_df, join_by(agency_code))
+
+agency_object
+
+```
+
+
+```{r Data type 5 of 6 Agency Award Types}
+
+
+agency_obligations_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/012/obligations_by_award_category")
+
+agency_obligations_parsed <- jsonlite::fromJSON(rawToChar(agency_obligations_raw$content))
+
+agency_obligations_df <- as_tibble(agency_obligations_parsed$results) |>
+  mutate("agency_code" = 12, .before = category)  
+
+
+agency_obligations <- agency_key |>
+  select(agency_name, agency_code) |>
+  right_join(agency_obligations_df, join_by(agency_code))
+
+agency_obligations
+
+agency_obligations_plot <- ggplot(data = agency_obligations, aes(x = category, y = aggregated_amount))
+
+agency_obligations_plot +
+  geom_col() +
+  scale_y_continuous(labels = comma)+
+  theme(axis.text.x = element_blank())
+
+
+```
+
+
+```{r Data type 6 of 6 Agency Activities}
+
+agency_activities_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/012/program_activity/")
+
+agency_activities_parsed <- jsonlite::fromJSON(rawToChar(agency_activities_raw$content))
+
+agency_activities_df <- as_tibble(agency_activities_parsed$results) |>
+  mutate("agency_code" = 12, .before = name)
+
+agency_activities <- agency_key |>
+  select(agency_name, agency_code) |>
+  right_join(agency_activities_df, join_by(agency_code))
+
+agency_activities
+
+```
+
+
+```{r}
+
+agency_activities_plot <- ggplot(data = agency_activities, aes(x = name, y = gross_outlay_amount, fill = name))
+
+agency_activities_plot +
+  geom_col() +
+  scale_y_continuous(labels = comma)+
+  theme(axis.text.x = element_blank())
+
+```
+
