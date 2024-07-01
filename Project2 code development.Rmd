@@ -30,7 +30,7 @@ agency_key_plot +
   scale_fill_discrete(name = "Agency") +
   theme(axis.text.x = element_blank()) +  
   labs(x = "Agency", y = "# of Awards Granted") +
-  coord_cartesian(ylim = c(0, 65000))
+  coord_cartesian(ylim = c(0, 2000000))
   
 
 ```
@@ -261,8 +261,8 @@ govt_spending <-function(agency_name, report) {
     agency_code = "073"
   } else if(agency_name %in% "Railroad Retirement Board") {
     agency_code = "060"
-  } else {
-    print ("Error: This is not the AGENCY you're looking for")
+  } else if(agency_name %in% "All") {
+    print ("Error: This selection is not currently available")
   }
   
   
@@ -280,9 +280,7 @@ govt_spending <-function(agency_name, report) {
       endpoint <- c("obligations_by_award_category")
     } else if(report %in% "Program Activity") {
       endpoint <- c("program_activity")
-    } else {
-      print("Error: This is not the ENDPOINT you're looking for")
-    }
+    } 
   
   
   
@@ -307,7 +305,9 @@ govt_spending <-function(agency_name, report) {
 #
 #  There are 6 endpoints in all that will be analyzed. We will be 
 #  using a `right_join` for each data set to merge the 
+
   
+#  The first data table we're going to read in is
   if(endpoint %in% "budgetary_resources") {
     df <- as_tibble(url_parsed$agency_data_by_year) |>
       select(fiscal_year:total_budgetary_resources) |>
@@ -445,10 +445,15 @@ govt_spending <-function(agency_name, report) {
 
 #test the function
 
-govt_spending("Department of Defense", "Program Activity")
+govt_spending("Social Security Administration", "Program Activity")
 
 ```
 
+```{r Genrate code for the ALL selection}
+
+
+
+```
 
 
 

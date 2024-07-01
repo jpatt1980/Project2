@@ -22,7 +22,14 @@ body <- dashboardBody(
             h6(tags$ul(
               tags$li("Department of Defense"),
               tags$li("Department of Agriculture"),
-              tags$li("General Services Administration"))),
+              tags$li("General Services Administration"),
+              tags$li("Department of Housing and Urban Development"),
+              tags$li("Department of Veterans Affairs"),
+              tags$li("Social Security Administration"),
+              tags$li("Department of Health and Human Services"),
+              tags$li("Federal Communications Commission"),
+              tags$li("Small Business Administration"),
+              tags$li("Railroad Retirement Board"))),
             br(),
             
             h4("Data Source:"),
@@ -40,17 +47,36 @@ body <- dashboardBody(
     tabItem(tabName = "download",
             h2("Data Download"),
             box(
-              "Select Department for Data Download",
-              selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration"), selected = "All")
+              plotOutput("plot1", width = 500, height = 250)
+            ),
+            
+            box(
+              sliderInput("slider", "Number of Awards Granted:", 0, 2000000, 1000000)
+            ),
+
+            
+            box(
+              "Select Federal Department",
+              selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
+            ),
+            
+            box(
+              "Select Financial Area",
+              selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
             )
     ),
     
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
           box(
-            "Select Department for summary analysis",
-            selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration"), selected = "All")
-            )
+            "Select Federal Department",
+            selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
+            ),
+          
+          box(
+            "Select Financial Area",
+            selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
+          )
     )
   )
 )
