@@ -1,5 +1,11 @@
-library(shiny)
-library(shinydashboard)
+## Project 2
+## Jason Pattison, ST 588-601 SUM I 2024
+
+library(tidyverse)
+library(readr)
+library(ggplot2)
+library(dplyr)
+library(scales) 
 
 
 sidebar <- dashboardSidebar(
@@ -45,13 +51,20 @@ body <- dashboardBody(
     ),
     
     tabItem(tabName = "download",
-            h2("Data Download"),
-            box(
-              plotOutput("plot1", width = 500, height = 250)
+            h2("Data Download"),      
+        
+        fluidRow(
+          
+          column(width = 12,
+            box(width = NULL, solidHeader = TRUE,
+              plotOutput("plot1", height = 200)
+            )
             ),
-            
-            box(
-              sliderInput("slider", "Number of Awards Granted:", 0, 2000000, 1000000)
+          
+          column(width = 12, 
+            box(width = NULL, height = 96, solidHeader = TRUE,
+              sliderInput("slider", "Number of Awards Granted:", 0, 2000000, 2000000)
+            )
             ),
 
             
@@ -63,8 +76,22 @@ body <- dashboardBody(
             box(
               "Select Financial Area",
               selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
+            ), 
+          
+          column(width = 12, 
+            box(title = "Department Financials", width = NULL, solidHeader = TRUE,
+              dataTableOutput('table1')
             )
-    ),
+          ), 
+          
+            downloadButton("download_data", "Download Dataset"), 
+              verbatimTextOutput("filtered_row"),
+              dataTableOutput('table2'),
+              tags$hr(),
+              plotOutput('plot2')
+            )
+          
+        ),
     
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
