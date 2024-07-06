@@ -6,6 +6,7 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 library(scales) 
+library(shinydashboard)
 
 
 sidebar <- dashboardSidebar(
@@ -63,14 +64,14 @@ body <- dashboardBody(
           
           column(width = 12, 
             box(width = NULL, height = 96, solidHeader = TRUE,
-              sliderInput("slider", "Number of Awards Granted:", 0, 2000000, 2000000)
+              sliderInput("slider", "# of Awards Granted:", 0, 2500000, 2500000)
             )
             ),
 
             
             box(
               "Select Federal Department",
-              selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
+              selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
             ),
             
             box(
@@ -78,17 +79,15 @@ body <- dashboardBody(
               selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
             ), 
           
-          column(width = 12, 
-            box(title = "Department Financials", width = NULL, solidHeader = TRUE,
-              dataTableOutput('table1')
-            )
-          ), 
+#          column(width = 12, 
+#            box(title = "Department Financials", width = #NULL, solidHeader = TRUE,
+#              DT::DTOutput('table1')
+#            )
+#          ), 
           
             downloadButton("download_data", "Download Dataset"), 
               verbatimTextOutput("filtered_row"),
-              dataTableOutput('table2'),
-              tags$hr(),
-              plotOutput('plot2')
+              DT::DTOutput('table2')
             )
           
         ),
@@ -97,7 +96,7 @@ body <- dashboardBody(
             h2("Data Exploration"),
           box(
             "Select Federal Department",
-            selectInput("dept", "Federal Department", choices = c("All", "Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
+            selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
             ),
           
           box(
