@@ -25,7 +25,7 @@ body <- dashboardBody(
             br(),
             
             h4("Purpose:"),
-            h6("The purpose of this app is to allow the user to summarize Federal spending information from the following departments:"),
+            h6("The purpose of this app is to allow the user to summarize federal department spending information of the following departments as reported by `USA Spending`:"),
             h6(tags$ul(
               tags$li("Department of Defense"),
               tags$li("Department of Agriculture"),
@@ -38,60 +38,67 @@ body <- dashboardBody(
               tags$li("Small Business Administration"),
               tags$li("Railroad Retirement Board"))),
             br(),
-            
+  
             h4("Data Source:"),
-            h6("The data being summarized can be found at 'https://api.usaspending.gov/docs/endpoints'. The user can summarize the data for each of the departments separately, or a combination of selected "),
+            h6("The data being summarized can be found at 'https://api.usaspending.gov/docs/endpoints'."),
+            tags$img(src = "https://files.usaspending.gov/django_static/img/logo.png"),
+            br(),
             br(),
             
             h4("Tabs:"),
-            h6("The 'Data Download' Tab allows the user to download the budget and obligation data for the departments separately, or all of the departments collectively."),
-            br(),
-            
-            h4("Include a picture of the data"),
-            tags$img(src = "https://files.usaspending.gov/django_static/img/logo.png")
-    ),
+            p(h6("The 'Data Download' tab provides a summary graphic and data table for comparison of spending across the ten agencies `USA Spending` reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
+            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies spending in each report area. ")),
+            br()
+        ), # <--- End of About Tab code
     
     tabItem(tabName = "download",
             h2("Data Download"),      
         
         fluidRow(
-          
+        # Generate column plot from `agency_key` data set  
           column(width = 12,
             box(width = NULL, solidHeader = TRUE,
               plotOutput("plot1", height = 200)
             )
-            ),
+            ), # <- end of `agency_key` plot
           
+        # Generate slider that will adust the y-axis of the `agency_key` plot
           column(width = 12, 
             box(width = NULL, height = 96, solidHeader = TRUE,
               sliderInput("slider", "# of Awards Granted:", 0, 2500000, 2500000)
             )
             ),
-
-            
+        
+        # Generate data table associated with `agency_key` data set
+          column(width = 12, 
+            box(title = "Awards Granted per Agency", width = NULL, solidHeader = TRUE,
+              DT::DTOutput('table1')
+               )
+           ), 
+        
+        # Generate selection parameter options for use in student generated function `govt_spending`
+          # Generate parameter for `agency_name` entry
             box(
               "Select Federal Department",
               selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
             ),
             
+          # Generate parameter for `report` entry
             box(
               "Select Financial Area",
               selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
             ), 
           
-#          column(width = 12, 
-#            box(title = "Department Financials", width = #NULL, solidHeader = TRUE,
-#              DT::DTOutput('table1')
-#            )
-#          ), 
-          
-            downloadButton("download_data", "Download Dataset"), 
-              verbatimTextOutput("filtered_row"),
-              DT::DTOutput('table2')
-            )
-          
-        ),
-    
+        # Generate data table associated with `govt_spending` created data set
+          column(width = 12,
+            box(title = "Department Financial Report",  width = NULL, solidHeader = TRUE,
+             DT::DTOutput('table2')
+               )
+          )
+)
+    ), # <--- End of Download Tab code 
+  
+  
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
           box(
@@ -102,10 +109,12 @@ body <- dashboardBody(
           box(
             "Select Financial Area",
             selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
-          )
-    )
-  )
-)
+          ), 
+    )  # end of Exploration Tab Code
+) # <- end of tabItems code
+) # <- end of dashboardBody code
+
+
 
 
 # Put them together into a dashboardPage

@@ -236,95 +236,91 @@ agency_key_plot +
 
 
 
-govt_spending <-function(agency_name, report) {
+govt_spending <-function(agency_name = "Department of Defense", report = "Budgetary Resources") {
   
 #  First, we need to convert our agency name into it's associated code
 #  for use in pulling the differing data sets at the endpoints. 
-  
-#  if(agency_name %in% "Department of Defense") {
-#    agency_code = "097"
-#  } else if(agency_name %in% "Department of Agriculture") {
-#    agency_code = "012"
-#  } else if(agency_name %in% "General Services Administration") {
-#    agency_code = "047"
-#  } else if(agency_name %in% "Department of Housing and Urban Development") {
-#    agency_code = "086"
-#  } else if(agency_name %in% "Department of Veterans Affairs") {
-#    agency_code = "036"
-#  } else if(agency_name %in% "Social Security Administration") {
-#    agency_code = "028"
-#  } else if(agency_name %in% "Department of Health and Human Services") {
-#    agency_code = "075"
-#  } else if(agency_name %in% "Federal Communications Commission") {
-#    agency_code = "027"
-#  } else if(agency_name %in% "Small Business Administration") {
-#    agency_code = "073"
-#  } else if(agency_name %in% "Railroad Retirement Board") {
-#    agency_code = "060"
-#  } else if(agency_name %in% "All") {
-#    print ("Error: This selection is not currently available")
-#  }
-  
-  agency_options <- c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board")
-  
-  agency_codes <- c("097", "012", "047", "086", "036", "028", "075", "027", "073", "060")
-  
-  
-  
-  ifelse(
-    agency_name %in% agency_key$agency_name, 
-    print(agency_key$agency_code), 
-    print ("Error: Incorrect Agency Selection")
-  )
 
-#      if_else(agency_name %in% "Department of Defense", agency_code <- "097",
-#        if_else(agency_name %in% "Department of Agriculture", agency_code <- "012",
-#          if_else(agency_name %in% "General Services Administration", agency_code <- "047",
-#            if_else(agency_name %in% "Department of Housing and Urban Development", agency_code <- "086",
-#              if_else(agency_name %in% "Department of Veterans Affairs", agency_code <- "036", 
-#                if_else(agency_name %in% "Social Security Administration", agency_code <- "028",
-#                  if_else(agency_name %in% "Department of Health and Human Services", agency_code <- "075",
-#                    if_else(agency_name %in% "Federal Communications Commission", agency_code <- "027", 
-#                      if_else(agency_name %in% "Small Business Administration", agency_code <- "073", 
-#                        if_else(agency_name %in% "Railroad Retirement Board", agency_code <- "060", print ("Error: Incorrect Agency Selection")
-#                              ))))))))))
+
+### vvv Troubleshooting: This conditional logic works in R, is not working using shinyDashboard vvv ###      
+  if(agency_name %in% "Department of Defense") {
+    agency_code = "097"
+  } else if(agency_name %in% "Department of Agriculture") {
+    agency_code = "012"
+  } else if(agency_name %in% "General Services Administration") {
+    agency_code = "047"
+  } else if(agency_name %in% "Department of Housing and Urban Development") {
+    agency_code = "086"
+  } else if(agency_name %in% "Department of Veterans Affairs") {
+    agency_code = "036"
+  } else if(agency_name %in% "Social Security Administration") {
+    agency_code = "028"
+  } else if(agency_name %in% "Department of Health and Human Services") {
+    agency_code = "075"
+  } else if(agency_name %in% "Federal Communications Commission") {
+    agency_code = "027"
+  } else if(agency_name %in% "Small Business Administration") {
+    agency_code = "073"
+  } else if(agency_name %in% "Railroad Retirement Board") {
+    agency_code = "060"
+  } else {
+    print ("Error: Incorrect Agency Selection")
+    }
+### ^^^ Troubleshooting: This conditional logic works in R, is not working using shinyDashboard ^^^ ###      
+  
+  
+###  vvv  Troubleshooting: This conditional logic is working in R, outputs the final else   vvv  ###
+###  vvv  "Error: Incorrect..." message instead of assigning an agency code vvv             vvv  ###      
+#  if_else(agency_name %in% "Department of Defense", agency_code <- "097",
+#    if_else(agency_name %in% "Department of Agriculture", agency_code <- "012",
+#      if_else(agency_name %in% "General Services Administration", agency_code <- "047",
+#        if_else(agency_name %in% "Department of Housing and Urban Development", agency_code <- "086",
+#          if_else(agency_name %in% "Department of Veterans Affairs", agency_code <- "036", 
+#            if_else(agency_name %in% "Social Security Administration", agency_code <- "028",
+#              if_else(agency_name %in% "Department of Health and Human Services", agency_code <- "075",
+#                if_else(agency_name %in% "Federal Communications Commission", agency_code <- "027", 
+#                  if_else(agency_name %in% "Small Business Administration", agency_code <- "073", 
+#                    if_else(agency_name %in% "Railroad Retirement Board", agency_code <- "060", print ("Error: Incorrect Agency #Selection")
+#                      ))))))))))
+###  ^^^  Troubleshooting: This conditional logic is working in R, outputs the final else   ^^^  ###
+###  ^^^  "Error: Incorrect..." message instead of assigning an agency code vvv             ^^^  ###
   
   
 #  Next we will generate conditional logic statements to determine the
 #  endpoint information that will be generated. 
   
-#    if(report %in% "Budgetary Resources") {
-#    endpoint <- c("budgetary_resources")
-#    } else if(report %in% "Federal Account") {
-#      endpoint <- c("federal_account")
-#    } else if(report %in% "Obligation Type") {
-#      endpoint <- c("object_class")
-#    } else if(report %in% "Award Obligations") {
-#      endpoint <- c("obligations_by_award_category")
-#    } else if(report %in% "Program Activity") {
-#      endpoint <- c("program_activity")
-#    } 
-  
-  report_options <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
-  
-  endpoint_options <- c("budgetary_resources", "federal_account", "object_class", "obligations_by_award_category", "program_activity")
-  
-  ifelse(report %in% report_options, #c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"),
-          print(endpoint_options), 
-          print("Error: Incorrect Report Type")
-    
-  )
-  
+###  vvv  Troubleshooting: This conditional logic works in R, is not working using shinyDashboard  vvv  ###      
+    if(report %in% "Budgetary Resources") {
+    endpoint <- c("budgetary_resources")
+    } else if(report %in% "Federal Account") {
+      endpoint <- c("federal_account")
+    } else if(report %in% "Obligation Type") {
+      endpoint <- c("object_class")
+    } else if(report %in% "Award Obligations") {
+      endpoint <- c("obligations_by_award_category")
+    } else if(report %in% "Program Activity") {
+      endpoint <- c("program_activity")
+    } else {
+      print ("Error: Incorrect Report Selection")
+      }
+###  ^^^  Troubleshooting: This conditional logic works in R, is not working using shinyDashboard  ^^^  ###      
+
+###  vvv  Troubleshooting: This conditional logic is working in R, outputs the final else   vvv  ###
+###  vvv  "Error: Incorrect..." message instead of assigning an agency code vvv             vvv  ### 
 #    if_else(report %in% "Budgetary Resources", endpoint <- "budgetary_resources", 
 #      if_else(report %in% "Federal Account", endpoint <- "federal_account", 
 #        if_else(report %in% "Obligation Type", endpoint <- "object_class", 
 #          if_else(report %in% "Award Obligations", endpoint <- "obligations_by_award_category", 
 #            if_else(report %in% "Program Activity", endpoint <- "program_activity", print ("Error: Incorrect Report Selection"))
 #        ))))
+###  ^^^  Troubleshooting: This conditional logic is working in R, outputs the final else   ^^^  ###
+###  ^^^  "Error: Incorrect..." message instead of assigning an agency code vvv             ^^^  ### 
+  
   
 #  Now that we have the conditional logic statements generated, we
 #  will use them to generate the API URLs and parse the API data 
 #  we are going to use to generate our data tables and graphics.
+  
   
   url_raw_data <- httr::GET(str_c("https://api.usaspending.gov/api/v2/agency/",agency_code, "/", endpoint, "/"))
   
@@ -483,7 +479,7 @@ govt_spending <-function(agency_name, report) {
 
 #test the function
 
-govt_spending("Department of Defense", "Budgetary Resources")
+govt_spending()
 
 ```
 

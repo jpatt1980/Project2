@@ -15,68 +15,81 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
   #  First, we need to convert our agency name into it's associated code
   #  for use in pulling the differing data sets at the endpoints. 
   
-#  if(agency_name %in% "Department of Defense") {
-#    agency_code = "097"
-#  } else if(agency_name %in% "Department of Agriculture") {
-#    agency_code = "012"
-#  } else if(agency_name %in% "General Services Administration") {
-#    agency_code = "047"
-#  } else if(agency_name %in% "Department of Housing and Urban Development") {
-#    agency_code = "086"
-#  } else if(agency_name %in% "Department of Veterans Affairs") {
-#    agency_code = "036"
-#  } else if(agency_name %in% "Social Security Administration") {
-#    agency_code = "028"
-#  } else if(agency_name %in% "Department of Health and Human Services") {
-#    agency_code = "075"
-#  } else if(agency_name %in% "Federal Communications Commission") {
-#    agency_code = "027"
-#  } else if(agency_name %in% "Small Business Administration") {
-#    agency_code = "073"
-#  } else if(agency_name %in% "Railroad Retirement Board") {
-#    agency_code = "060"
-#  } else if(agency_name %in% "All") {
-#    print ("Error: Incorrect Selection")
-#  }
+  
+###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+  if(agency_name %in% "Department of Defense") {
+    agency_code = "097"
+  } else if(agency_name %in% "Department of Agriculture") {
+    agency_code = "012"
+  } else if(agency_name %in% "General Services Administration") {
+    agency_code = "047"
+  } else if(agency_name %in% "Department of Housing and Urban Development") {
+    agency_code = "086"
+  } else if(agency_name %in% "Department of Veterans Affairs") {
+    agency_code = "036"
+  } else if(agency_name %in% "Social Security Administration") {
+    agency_code = "028"
+  } else if(agency_name %in% "Department of Health and Human Services") {
+    agency_code = "075"
+  } else if(agency_name %in% "Federal Communications Commission") {
+    agency_code = "027"
+  } else if(agency_name %in% "Small Business Administration") {
+    agency_code = "073"
+  } else if(agency_name %in% "Railroad Retirement Board") {
+    agency_code = "060"
+  } else {print ("Error: Incorrect Agency Selection")}
+###  ^^^  Error: conditional logic generates error associated with the usage of `%in%`  ^^^  ###
+###  ^^^  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  ^^^  ###
   
   
-    if_else(agency_name %in% c("Department of Defense"), agency_code <- c("097"),
-      if_else(agency_name %in% c("Department of Agriculture"), agency_code <- c("012"),
-        if_else(agency_name %in% c("General Services Administration"), agency_code <- c("047"),
-          if_else(agency_name %in% c("Department of Housing and Urban Development"), agency_code <- c("086"),
-            if_else(agency_name %in% c("Department of Veterans Affairs"), agency_code <- c("036"), 
-              if_else(agency_name %in% c("Social Security Administration"), agency_code <- c("028"),
-                if_else(agency_name %in% C("Department of Health and Human Services"), agency_code <- c("075"),
-                  if_else(agency_name %in% c("Federal Communications Commission"), agency_code <- c("027"), 
-                    if_else(agency_name %in% c("Small Business Administration"), agency_code <- c("073"), 
-                      if_else(agency_name %in% c("Railroad Retirement Board"), agency_code = "060", print ("Error: Incorrect Selection")
-                              ))))))))))
-
+###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+#    if_else(agency_name %in% "Department of Defense", agency_code <- "097",
+#      if_else(agency_name %in% "Department of Agriculture", agency_code <- "012",
+#        if_else(agency_name %in% "General Services Administration", agency_code <- "047",
+#          if_else(agency_name %in% "Department of Housing and Urban Development", agency_code <- "086",
+#            if_else(agency_name %in% "Department of Veterans Affairs", agency_code <- "036", 
+#              if_else(agency_name %in% "Social Security Administration", agency_code <- "028",
+#                if_else(agency_name %in% "Department of Health and Human Services", agency_code <- "075",
+#                  if_else(agency_name %in% "Federal Communications Commission", agency_code <- "027", 
+#                    if_else(agency_name %in% "Small Business Administration", agency_code <- "073", 
+#                      if_else(agency_name %in% "Railroad Retirement Board", agency_code = "060", print ("Error: Incorrect Agency #Selection")
+#                              ))))))))))
+###  ^^^  Error: conditional logic generates error associated with the usage of `%in%`  ^^^  ###
+###  ^^^  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  ^^^  ###
   
   
   #  Next we will generate conditional logic statements to determine the
   #  endpoint information that will be generated. 
   
-#  if(report %in% "Budgetary Resources") {
-#    endpoint <- c("budgetary_resources")
-#  } else if(report %in% "Federal Account") {
-#    endpoint <- c("federal_account")
-#  } else if(report %in% "Obligation Type") {
-#    endpoint <- c("object_class")
-#  } else if(report %in% "Award Obligations") {
-#    endpoint <- c("obligations_by_award_category")
-#  } else if(report %in% "Program Activity") {
-#    endpoint <- c("program_activity")
-#  } 
   
+###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+  if(report %in% "Budgetary Resources") {
+    endpoint <- c("budgetary_resources")
+  } else if(report %in% "Federal Account") {
+    endpoint <- c("federal_account")
+  } else if(report %in% "Obligation Type") {
+    endpoint <- c("object_class")
+  } else if(report %in% "Award Obligations") {
+    endpoint <- c("obligations_by_award_category")
+  } else if(report %in% "Program Activity") {
+    endpoint <- c("program_activity")
+  } else {print("Error: Incorrect Report selection")}
+###  ^^^  Error: conditional logic generates error associated with the usage of `%in%`  ^^^  ###
+###  ^^^  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  ^^^  ###
   
-  if_else(report %in% c("Budgetary Resources"), endpoint <- c("budgetary_resources"), 
-    if_else(report %in% c("Federal Account"), endpoint <- c("federal_account"), 
-      if_else(report %in% c("Obligation Type"), endpoint <- c("object_class"), 
-        if_else(report %in% c("Award Obligations"), endpoint <- c("obligations_by_award_category"), 
-          if_else(report %in% c("Program Activity"), endpoint <- c("program_activity"), print ("Error: Incorrect Selection"))
-        ))))
-  
+###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+#  if_else(report %in% "Budgetary Resources", endpoint <- "budgetary_resources", 
+#   if_else(report %in% "Federal Account", endpoint <- "federal_account", 
+#      if_else(report %in% "Obligation Type", endpoint <- "object_class", 
+#        if_else(report %in% "Award Obligations", endpoint <- "obligations_by_award_category", 
+#          if_else(report %in% "Program Activity", endpoint <- "program_activity", print ("Error: Incorrect Report Selection"))
+#        )))) 
+###  ^^^  Error: conditional logic generates error associated with the usage of `%in%`  ^^^  ###
+###  ^^^  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  ^^^  ###
   
   #  Now that we have the conditional logic statements generated, we
   #  will use them to generate the API URLs and parse the API data 
@@ -111,11 +124,9 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     df$agency_code <- as.numeric(df$agency_code)
     
-    endpoint_df <- agency_key |>
+    endpoint_df <<- agency_key |>
       dplyr::select(agency_name, agency_code) |>
       right_join(df, join_by(agency_code))  
-    
-    print(endpoint_df)
     
     endpoint_df_plot <- ggplot(endpoint_df, aes(x = fiscal_year, y = agency_budget))
     
@@ -128,7 +139,6 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
                          values = c("blue", "red")) +
       labs(title = "Agency Budget", x = "Budget Year", y = "$ Amount") 
     
-    
   } else if(endpoint %in% "federal_account") {
     df <- as_tibble(url_parsed$results) |>
       dplyr::select(code, name, obligated_amount, gross_outlay_amount) |>
@@ -136,11 +146,9 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     df$agency_code <- as.numeric(df$agency_code)
     
-    endpoint_df <- agency_key |>
+    endpoint_df <<- agency_key |>
       dplyr::select(agency_name, agency_code) |>
       right_join(df, join_by(agency_code))  
-    
-    print(endpoint_df)
     
     endpoint_df_plot <- ggplot(endpoint_df, aes(code, obligated_amount, fill = code))
     
@@ -158,13 +166,9 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     df$agency_code <- as.numeric(df$agency_code)
     
-    
-    endpoint_df <- agency_key |>
+    endpoint_df <<- agency_key |>
       dplyr::select(agency_name, agency_code) |>
       right_join(df, join_by(agency_code))  
-    
-    print(endpoint_df)
-    
     
     endpoint_df_plot <- ggplot(endpoint_df, aes(obligation_name, obligated_amount, color = obligation_name))
     
@@ -185,11 +189,9 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     df$agency_code <- as.numeric(df$agency_code)      
     
-    endpoint_df <- agency_key |>
+    endpoint_df <<- agency_key |>
       dplyr::select(agency_name, agency_code) |>
       right_join(df, join_by(agency_code))  
-    
-    print(endpoint_df)
     
     endpoint_df_plot <- ggplot(data = endpoint_df, aes(x = category, y = aggregated_amount, fill = category))
     
@@ -200,6 +202,7 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
       theme(axis.text.x = element_blank()) +
       coord_cartesian(ylim = c(0,120000000000))
     
+
   } else if(endpoint %in% "program_activity") {
     no_na <- c("Undisclosed") 
     
@@ -209,15 +212,11 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     df$agency_code <- as.numeric(df$agency_code)      
     
-    
-    
-    endpoint_df <- agency_key |>
+    endpoint_df <<- agency_key |>
       dplyr::select(agency_name, agency_code) |>
       right_join(df, join_by(agency_code))  
     
-    print(endpoint_df)
-    
-    endpoint_df_plot <- ggplot(data = endpoint_df, aes(x = name, y = gross_outlay_amount))
+    endpoint_df_plot <<- ggplot(data = endpoint_df, aes(x = name, y = gross_outlay_amount))
     
     endpoint_df_plot +
       geom_point(aes(gross_outlay_amount, color = "Budgeted")) +
@@ -236,12 +235,16 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
   
 }
 
+
+
 ### End of `govt_spending` function. 
 
 
+##########     Start of ShinyDashboard server function     ##########
+
   server <- function(input, output) {
   
-#  Create the background code for the data download and exploration tabs.
+#####     Create the background code for the data download and exploration tabs     #####
     
 ##  Data download    
 ###  Create the `agency_key` data set that will be used to 
@@ -270,13 +273,9 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
 ## Output the plot and data table to the "Download" tab.     
     
-#    output$table1 <- renderDataTable(agency_key, options = #list(pageLength = 5, lengthMenu = c(5, 10), scrollX = TRUE)
-#                                    )
- 
-   
-    
+    output$table1 <- DT::renderDT(agency_key, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE)
+                                    )
     output$plot1 <- renderPlot({
-    
       agency_key_plot <- ggplot(agency_key, aes(x = agency_name, y = total_awards, fill = agency_name))
       
       agency_key_plot +
@@ -291,35 +290,33 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
     ## Output the data table and plot based on user selections of "Federal Department" and "Financial Area"
 
-#    agency_name <- reactive(input$dept)
-#     
-#    report <- reactive(input$report_area)
+
+###  vvv  Attempt to input the department and report type into the self-created function  vvv ###
+#  observeEvent(
+#    input$dept, {
+#    agency_name <- reactive ({
+#          input$dept
+#      })
+#    report <- reactive ({
+#      input$report_area
+#      })   
 #    
-#    govt_spending(paste0(agency_name), paste0(report))    
+#    updateSelectInput(session = session, inputID = dept)
+#    updateSelectInput(session = session, inputID = report_area)
+#  })
+###  ^^^  Attempt to create parameter inputs for `agency_name` and `report` into `govt_spending`  ^^^ ###    
     
-    
-    agency_name <- reactive ({
-          input$dept
-    })
-    
-    report <- reactive ({
-      input$report_area
-    })
-    
-    govt_spending(agency_name, report)
-    
+    govt_spending("Department of Defense", "Budgetary Resources")
 
-    
-
-    
-    
+    output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE)
+    )
     
 #  Generate code for the "Explore" tab. 
 
-  ##  Generate the combined data set of all 10 Departments that will be used to cross-analyze their financials. 
+##  Generate the combined data set of all 10 Departments that will be used to cross-analyze their financials. 
 
 ##  Generate graph/table of the data.      
 
     
-# Server closing bracket   
+##########     End of ShinyDashboard server function     ##########   
   }
