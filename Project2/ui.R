@@ -105,6 +105,7 @@ body <- dashboardBody(
   
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
+      fluidRow(
 #          box(
 #            "Select Federal Department",
 #            selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General #Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security #Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", #"Railroad Retirement Board"), selected = "Department of Defense")
@@ -114,6 +115,27 @@ body <- dashboardBody(
             "Select Financial Area",
             selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
           ), 
+          
+          column(width = 12,
+                 box(width = NULL, solidHeader = TRUE,
+                     plotOutput("plot2", height = 200)
+                 )
+          ), 
+          
+          column(width = 12,
+                 box(width = NULL, solidHeader = TRUE,
+                     plotOutput("plot3", height = 200)
+                 )
+          ), 
+          
+          column(width = 12,
+                 box(title = "Combined Financial Report",  width = NULL, solidHeader = TRUE,
+                     DT::DTOutput('table3'),
+                     downloadButton("downloadData", "Download")
+                 )
+          ), # <-- end of 
+
+              ) # <- End of Exploration Fluid Row
     )  # end of Exploration Tab Code
 ) # <- end of tabItems code
 ) # <- end of dashboardBody code

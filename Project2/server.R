@@ -10,9 +10,10 @@ library(scales)
 
 #####     Create the background code for the data download and exploration tabs     #####
 
-###  Create the `agency_key` data set that will be used to generate the ggplot and
-###  slider which will control the y-axis on the graphic on the download tab. `agency_key`
-###  also ties into user created function `govt_spending`. 
+###  Create the `agency_key` data set
+###  This is will be used to generate a bar plot with a slider that will 
+###  control the y-axis on the graphic on the download tab. `agency_key`
+###  also ties into user created functions `govt_spending` and `combined_govt_spending`. 
   
   agency_key_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/awards/count")
   
@@ -33,7 +34,8 @@ library(scales)
   
   
 ### Generate `govt_spending` unction that will be used to generate department financial reports by type. 
-
+  
+  
 govt_spending <-function(agency_name = "Department of Defense", report = "Program Activity") {
   
   #  First, we need to convert our agency name into it's associated code
@@ -126,7 +128,6 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Progra
   url_parsed <- jsonlite::fromJSON(rawToChar(url_raw_data$content))
   
   
-  
   #  Because each endpoint has different variables associated with it,      
   #  we will be using more conditional logic to extract usable data and
   #  generate our summary graphics.
@@ -137,7 +138,8 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Progra
   #  `Data Exploration` tab of the app. 
   #
   #  There are 6 endpoints in all that will be analyzed. We will be 
-  #  using a `right_join` for each data set to merge the 
+  #  using a `right_join` for each data set to merge the `agency_key` information
+  #  to each of the report data tables. 
   
   
   #  The first data table we're going to read in is
@@ -313,7 +315,7 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Progra
     govt_spending()
 
     output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE)
-    )
+                                  )
     
     output$downloadData <- downloadHandler(
       filename = "test.csv",
@@ -326,7 +328,14 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Progra
 
 ##  Generate the combined data set of all 10 Departments that will be used to cross-analyze their financials. 
     
+#    combined_govt_spending()
     
+    output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=2, lengthMenu=c(3, 6, 10), scrollX=TRUE)
+                                  )
+    
+    output$plot2 <- renderPlot(combined_plot1)
+    
+    output$plot3 <- renderPlot(combined_plot2)
 
 ##  Generate graph/table of the data.      
 

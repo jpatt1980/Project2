@@ -1,10 +1,16 @@
+---
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
 ```{r}
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(dplyr)
 library(scales)
-library(ggcorrplot)
+library(treemap)
+library(RColorBrewer)
 
 ```
 
@@ -301,6 +307,7 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Progra
       print ("Error: Incorrect Report Selection")
       }
 ###  ^^^  Troubleshooting: This conditional logic works in R, is not working using shinyDashboard  ^^^  ###      
+  
 
 ###  vvv  Troubleshooting: This conditional logic is working in R, outputs the final else   vvv  ###
 ###  vvv  "Error: Incorrect..." message instead of assigning an agency code vvv             vvv  ### 
@@ -500,7 +507,7 @@ govt_spending()
 
   agency_key
 
-report <- "Award Obligations"
+combined_agency_spending <- function(report = "Program Activity") {
 
     if(report %in% "Budgetary Resources") {
     endpoint <- c("budgetary_resources")
@@ -529,81 +536,9 @@ gsa_url_parsed <- jsonlite::fromJSON(rawToChar(gsa_url_raw_data$content))
 
 
 #convert data to tibble frames and merge them for generating reports
-if(endpoint %in% "program_activity") {
-      df <- as_tibble(dod_url_parsed$results) |>
-        mutate("agency_code" = "097", .before = 1) |>
-        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
 
-      df$agency_code <- as.numeric(df$agency_code)      
-      
-      dod_df <<- agency_key |>
-        dplyr::select(agency_name, agency_code) |>
-        right_join(df, join_by(agency_code))  
-      
-      dod_df
-      
-      df <- as_tibble(doa_url_parsed$results) |>
-        mutate("agency_code" = "012", .before = 1) |>
-        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
 
-      df$agency_code <- as.numeric(df$agency_code)      
-      
-      doa_df <<- agency_key |>
-        dplyr::select(agency_name, agency_code) |>
-        right_join(df, join_by(agency_code))  
-      
-      doa_df
-      
-      df <- as_tibble(gsa_url_parsed$results) |>
-        mutate("agency_code" = "047", .before = 1) |>
-        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
-
-      df$agency_code <- as.numeric(df$agency_code)      
-      
-      gsa_df <<- agency_key |>
-        dplyr::select(agency_name, agency_code) |>
-        right_join(df, join_by(agency_code))  
-      
-      gsa_df
-      
-      combined_1 <- dod_df |>
-        full_join(doa_df)
-      
-      combined_df <- combined_1 |>
-        full_join(gsa_df)
-      
-      print(combined_df)
-      
-      combined_df_facet <- ggplot(data = combined_df, aes(x = name, y = gross_outlay_amount))
-
-      combined_facet_plot <- combined_df_facet +
-        geom_point(aes(gross_outlay_amount, color = "Budgeted")) +
-        geom_point(aes(obligated_amount, color = "Obligated")) +
-        scale_y_continuous(labels = dollar)+
-        scale_fill_discrete(name = "Program Activity")+
-        labs(x = "Program", y = "$ Amount Spent") +
-        theme(axis.text.x = element_blank())+
-        theme(strip.text = element_text(size = 4)) +
-        scale_color_manual("", 
-                         breaks = c("Budgeted", "Obligated"), 
-                         values = c("blue", "red")) +
-        facet_wrap(~name, labeller = labeller(name = label_wrap_gen(width = 15)))
-      
-      print(combined_facet_plot)
-      
-      combined_df_point <- ggplot(data = combined_df, aes(x = name, y = gross_outlay_amount, shape = agency_name))
-      
-      combined_point_plot <- combined_df_point +
-        geom_point() +
-        scale_shape_discrete(name = "Agency") +
-        scale_y_continuous(labels=dollar) +
-        theme(axis.text.x = element_blank()) +  
-        labs(x = "Program", y = "$ Spent on Program") +
-        coord_cartesian(ylim = c(0, 175000000000))
-        
-      print(combined_point_plot)
-
-} else if(endpoint %in% "budgetary_resources") {
+if(endpoint %in% "budgetary_resources") {
       df <- as_tibble(dod_url_parsed$agency_data_by_year) |>
         dplyr::select(fiscal_year:total_budgetary_resources) |>
         rename("agency_budget" = agency_budgetary_resources,
@@ -656,26 +591,32 @@ if(endpoint %in% "program_activity") {
       
       combined_df_point <- ggplot(data = combined_df, aes(x = fiscal_year, y = agency_budget, color = agency_name))
       
-      combined_point_plot <- combined_df_point +
+      combined_plot1 <- combined_df_point +
         geom_point(aes(y = agency_budget, shape = "Budget")) +
         geom_point(aes(y = agency_obligations, shape = "Obligations")) +
         scale_color_discrete(name = "Agency") +
         scale_shape_discrete(name = "Budget / Obligation") +
         scale_y_continuous(labels=dollar) +
-        labs(x = "Fiscal Year", y = "$ Spent by Agency") 
+        labs(title="Agency Budgets vs Obligations", x = "Fiscal Year", y = "$ Spent by Agency") 
       
-      print(combined_point_plot)
+      print(combined_plot1)
       
       combined_df_box <- ggplot(data = combined_df, aes(x = fiscal_year, y = agency_budget))
       
-      combined_box_plot <- combined_df_box +
-        geom_boxplot(aes(group = fiscal_year, fill = "red")) +
-        scale_y_continuous(name="$ Spent per Year", label=dollar) +
+      combined_plot2 <- combined_df_box +
+        geom_boxplot(aes(group=fiscal_year, fill="#CC0000")) +
+        scale_y_continuous(name="$ Amount Spent", label=dollar) +
         scale_x_continuous(name="Budget Year") +
+        labs(title="$ Amount Spent per Budget Year") +
         guides(fill = FALSE) 
 
-      print(combined_box_plot)
-} else if(endpoint %in% "federal_account") {
+      print(combined_plot2)
+
+      
+}  ###  <-- end of `Budgetary Resources` code
+
+
+else if(endpoint %in% "federal_account") {
       df <- as_tibble(dod_url_parsed$results) |>
         dplyr::select(code, name, obligated_amount, gross_outlay_amount) |>
         mutate("agency_code" = "097", .before = 1)
@@ -720,29 +661,33 @@ if(endpoint %in% "program_activity") {
       
       print(combined_df)
       
-      combined_df_col <- ggplot(combined_df, aes(x=name, y=obligated_amount, fill = code))
+      combined_df_col <- ggplot(combined_df, aes(x=agency_name, y=obligated_amount))
       
-      combined_col_plot <- combined_df_col +
-        geom_col() +
+      combined_plot1 <- combined_df_col +
+        geom_col(aes(fill=agency_name)) +
         theme(axis.text.x = element_blank()) +
         scale_y_continuous(labels=dollar) +
-        scale_fill_discrete(name="Program Code") +
-        labs(x="Program", y="$ Amount Obligated")
+        scale_fill_discrete(name="Agency") +
+        labs(title="$ Amount Obligated by Program Code", x="Program", y="$ Amount Obligated")+
+        facet_wrap(~code, labeller = labeller(name = label_wrap_gen(width = 15))) 
         
-      print(combined_col_plot)
+      print(combined_plot1)
       
       combined_df_plot <- (ggplot(combined_df, aes(shape=agency_name))) #, aes(x=obligated_amount, y=agency_name)))
       
-      combined_qq_plot <- combined_df_plot +
+      combined_plot2 <- combined_df_plot +
         geom_qq(aes(sample=obligated_amount)) +
-        geom_qq(aes(sample=gross_outlay_amount)) +
         scale_y_continuous(labels=dollar) +
         scale_shape_discrete(name="Agency") +
-        labs(x="Theoretical Data", y="$ Amount Spent")
+        labs(title="QQ Plot of $ Amount Obligated by Agency", x="Theoretical Data", y="$ Amount Spent") 
       
-      print(combined_qq_plot)
+      print(combined_plot2)
       
-} else if(endpoint %in% "object_class") {
+      
+}  ###  <-- end of `Federal Account` code
+
+
+else if(endpoint %in% "object_class") {
       df <- as_tibble(dod_url_parsed$results) |>
         rename("obligation_name" = name) |>
         mutate("agency_code" = "097", .before = 1)
@@ -789,30 +734,37 @@ if(endpoint %in% "program_activity") {
       
       combined_df_tile <- ggplot(combined_df, aes(x=agency_name, y=obligation_name, fill=obligated_amount))
       
-      combined_tile_plot <- combined_df_tile +
+      combined_plot1 <- combined_df_tile +
         geom_tile() +
-        labs(x="Agency", y="Award Obligation", fill="$ Obligated") +
+        scale_fill_distiller(labels=comma) +
+        labs(title="Award Recepients by Agency and Amount", x="Agency", y="Award Obligation", fill="$ Obligated") +
         theme(axis.text.x = element_blank()) 
       
-      print(combined_tile_plot)
+      print(combined_plot1)
       
-      combined_df_bar <- ggplot(combined_df, aes(x=obligation_name ))
+      combined_plot2 <- treemap(combined_df, 
+                                title="Award Recepients by Agency", 
+                                index= c("agency_name", "obligation_name"),
+                                vSize="obligated_amount",
+                                type="index",
+                                palette = "BuPu",
+                                fontsize.labels = c(15, 12),
+                                fontcolor.labels = c("#CC0000", "#000000"),
+                                bg.labels = c("transparent"),
+                                align.labels = list(
+                                  c("center", "center"),
+                                  c("center", "bottom")
+                                ),
+                                overlap.labels = 0.5,
+                                inflate.labels = FALSE)
       
-      combined_bar_plot <- combined_df_bar +
-        geom_bar(aes(fill=agency_name )) +
-        scale_fill_discrete(name="Agency") +
-        theme(axis.text.x = element_blank(),
-              legend.position = "bottom",
-              legend.text = element_text(size=8)) +        
-        labs(title="Histogram of Agency Award Recepients by Type",
-             x="Award Recepients",
-             y="# of Agencies")
-        
-      print(combined_bar_plot)      
+      print(combined_plot2)
+      
+      
+}  ###  <-- end of `Obligation Type` code
 
-      
-      
-} else if(endpoint %in% "obligations_by_award_category") {
+
+else if(endpoint %in% "obligations_by_award_category") {
         df <- as_tibble(dod_url_parsed$results) |>
         mutate("agency_code" = "097", .before = 1)  
 
@@ -853,7 +805,112 @@ if(endpoint %in% "program_activity") {
         full_join(gsa_df)
       
       print(combined_df)
-}
+      
+      combined_df_col <- ggplot(combined_df, aes(x=category , y=aggregated_amount))
+      
+      combined_plot1 <- combined_df_col +
+        geom_col(aes(fill=agency_name)) +
+        scale_x_discrete(guide=guide_axis(n.dodge=2)) +
+        scale_y_continuous(labels=dollar) +
+        scale_fill_discrete(name="Agency") +
+        labs(title="Awards by Type and Agency", x="Award Type", y="$ Amount Awarded") 
+      
+      print(combined_plot1)
+      
+      combined_df_box <- ggplot(combined_df, aes(x=category, y=aggregated_amount))
+      
+      combined_plot2 <- combined_df_box +
+        geom_boxplot(fill="#CC0000") +
+        scale_x_discrete(guide=guide_axis(n.dodge=2)) +
+        scale_y_continuous(labels=dollar) +
+        labs(title="Agency Awards by Type and Range", x="Award Type", y="$ Amount Awarded")
+      
+      print(combined_plot2)
+      
+      
+}  ###  <-- end of `Award Obligations` code
+
+
+else if(endpoint %in% "program_activity") {
+      df <- as_tibble(dod_url_parsed$results) |>
+        mutate("agency_code" = "097", .before = 1) |>
+        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
+
+      df$agency_code <- as.numeric(df$agency_code)      
+      
+      dod_df <<- agency_key |>
+        dplyr::select(agency_name, agency_code) |>
+        right_join(df, join_by(agency_code))  
+      
+      dod_df
+      
+      df <- as_tibble(doa_url_parsed$results) |>
+        mutate("agency_code" = "012", .before = 1) |>
+        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
+
+      df$agency_code <- as.numeric(df$agency_code)      
+      
+      doa_df <<- agency_key |>
+        dplyr::select(agency_name, agency_code) |>
+        right_join(df, join_by(agency_code))  
+      
+      doa_df
+      
+      df <- as_tibble(gsa_url_parsed$results) |>
+        mutate("agency_code" = "047", .before = 1) |>
+        mutate(name = str_replace(name, "N/A", "UNDISCLOSED"))        
+
+      df$agency_code <- as.numeric(df$agency_code)      
+      
+      gsa_df <<- agency_key |>
+        dplyr::select(agency_name, agency_code) |>
+        right_join(df, join_by(agency_code))  
+      
+      gsa_df
+      
+      combined_1 <- dod_df |>
+        full_join(doa_df)
+      
+      combined_df <- combined_1 |>
+        full_join(gsa_df)
+      
+      print(combined_df)
+      
+      combined_df_facet <- ggplot(data = combined_df, aes(x = name, y = gross_outlay_amount))
+
+      combined_plot1 <- combined_df_facet +
+        geom_point(aes(gross_outlay_amount, color = "Budgeted")) +
+        geom_point(aes(obligated_amount, color = "Obligated")) +
+        scale_y_continuous(labels = dollar, guide=guide_axis(check.overlap=TRUE))+
+        labs(title="Program Budgets vs Obligations", x = "Program", y = "$ Amount Spent") +
+        theme(axis.text.x = element_blank())+
+        theme(strip.text = element_text(size = 5)) +
+        scale_color_manual("Budgeted / Obligated", 
+                         breaks = c("Budgeted", "Obligated"), 
+                         values = c("blue", "#CC0000")) +
+        facet_wrap(~name, labeller = labeller(name = label_wrap_gen(width = 15)))
+      
+      print(combined_plot1)
+      
+      combined_df_point <- ggplot(data = combined_df, aes(x = gross_outlay_amount, y =name , shape = agency_name))
+      
+      combined_plot2 <- combined_df_point +
+        geom_point() +
+        scale_shape_discrete(name = "Agency") +
+        scale_x_continuous(labels=dollar) +
+        theme(axis.text.y = element_blank()) +  
+        labs(title="$ Amount Spent on Programs per Agency", x ="$ Amount Spent" , y ="Program" ) +
+        coord_cartesian(xlim = c(0, 175000000000))
+        
+      print(combined_plot2)
+      
+      
+}  ###  <-- end of `Program Activity` code
+
+
+}  ###  <-- end of `combined_agency_spending` function
+
+combined_agency_spending()
 ```
 
 
