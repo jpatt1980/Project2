@@ -47,7 +47,7 @@ body <- dashboardBody(
             
             h4("Tabs:"),
             p(h6("The 'Data Download' tab provides a summary graphic and data table for comparison of spending across the ten agencies `USA Spending` reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
-            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies spending in each report area. ")),
+            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies with the three highest number of awards given. ")),
             br()
         ), # <--- End of About Tab code
     
@@ -92,20 +92,24 @@ body <- dashboardBody(
         # Generate data table associated with `govt_spending` created data set
           column(width = 12,
             box(title = "Department Financial Report",  width = NULL, solidHeader = TRUE,
-             DT::DTOutput('table2')
+             DT::DTOutput('table2'),
+             downloadButton("downloadData", "Download")
                )
-          )
+          ),
+        
+        # Generate downolad for data table
+          
 )
     ), # <--- End of Download Tab code 
   
   
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
-          box(
-            "Select Federal Department",
-            selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
-            ),
-          
+#          box(
+#            "Select Federal Department",
+#            selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General #Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security #Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", #"Railroad Retirement Board"), selected = "Department of Defense")
+#            ),
+#          
           box(
             "Select Financial Area",
             selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")

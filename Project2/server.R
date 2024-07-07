@@ -8,16 +8,41 @@ library(dplyr)
 library(scales)  
 
 
-### Generate `govt_spending` unction that will be used to generate agency financial reports by type. 
+#####     Create the background code for the data download and exploration tabs     #####
 
-govt_spending <-function(agency_name = "Department of Defense", report = "Budgetary Resources") {
+###  Create the `agency_key` data set that will be used to generate the ggplot and
+###  slider which will control the y-axis on the graphic on the download tab. `agency_key`
+###  also ties into user created function `govt_spending`. 
+  
+  agency_key_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/awards/count")
+  
+  agency_key_parsed <- jsonlite::fromJSON(rawToChar(agency_key_raw$content))
+  
+  agency_key_df <- as_tibble(agency_key_parsed$results[[1]]) |>
+    rename("agency_name" = awarding_toptier_agency_name,
+           "agency_code" = awarding_toptier_agency_code,
+           "indef_deliv_contract" = idvs) |>
+    mutate(total_awards = contracts + direct_payments + grants + indef_deliv_contract + loans + other) |>
+    dplyr::arrange(desc(total_awards))
+  
+  agency_key_df$agency_code <- as.numeric(agency_key_df$agency_code)
+  
+  agency_key <- agency_key_df
+  
+  agency_key
+  
+  
+### Generate `govt_spending` unction that will be used to generate department financial reports by type. 
+
+govt_spending <-function(agency_name = "Department of Defense", report = "Program Activity") {
   
   #  First, we need to convert our agency name into it's associated code
   #  for use in pulling the differing data sets at the endpoints. 
   
-  
-###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
-###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+
+###  VVV  Manually inputting agency_name parameter to make the below code work due to      VVV  ###
+###  vvv  Error in conditional logic generating error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"     vvv  ###
   if(agency_name %in% "Department of Defense") {
     agency_code = "097"
   } else if(agency_name %in% "Department of Agriculture") {
@@ -64,18 +89,19 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
   #  endpoint information that will be generated. 
   
   
-###  vvv  Error: conditional logic generates error associated with the usage of `%in%`  vvv  ###
-###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  vvv  ###
+###  VVV  Manually inputting report parameter to make the below code work due to           VVV  ###
+###  vvv  Error in conditional logic generating error associated with the usage of `%in%`  vvv  ###
+###  vvv  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"     vvv  ###
   if(report %in% "Budgetary Resources") {
-    endpoint <- c("budgetary_resources")
+    endpoint <- "budgetary_resources"
   } else if(report %in% "Federal Account") {
-    endpoint <- c("federal_account")
+    endpoint <- "federal_account"
   } else if(report %in% "Obligation Type") {
-    endpoint <- c("object_class")
+    endpoint <- "object_class"
   } else if(report %in% "Award Obligations") {
-    endpoint <- c("obligations_by_award_category")
+    endpoint <- "obligations_by_award_category"
   } else if(report %in% "Program Activity") {
-    endpoint <- c("program_activity")
+    endpoint <- "program_activity"
   } else {print("Error: Incorrect Report selection")}
 ###  ^^^  Error: conditional logic generates error associated with the usage of `%in%`  ^^^  ###
 ###  ^^^  "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments"  ^^^  ###
@@ -233,47 +259,25 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
     
   } 
   
-}
+} ### <-- End of `govt_spending` function. 
+
+
+###  Generate combined data sets for report analysis across the top 3 award generating agencies
 
 
 
-### End of `govt_spending` function. 
 
 
 ##########     Start of ShinyDashboard server function     ##########
 
   server <- function(input, output) {
   
-#####     Create the background code for the data download and exploration tabs     #####
     
 ##  Data download    
-###  Create the `agency_key` data set that will be used to 
-###  generate the ggplot and slider which will control the 
-###  y-axis on the graphic on the download tab. 
-    
-    agency_key_raw <- httr::GET("https://api.usaspending.gov/api/v2/agency/awards/count")
-    
-    agency_key_parsed <- jsonlite::fromJSON(rawToChar(agency_key_raw$content))
-    
-    agency_key_df <- as_tibble(agency_key_parsed$results[[1]]) |>
-      rename("agency_name" = awarding_toptier_agency_name,
-             "agency_code" = awarding_toptier_agency_code,
-             "indef_deliv_contract" = idvs) |>
-      mutate(total_awards = contracts + direct_payments + grants + indef_deliv_contract + loans + other) |>
-      dplyr::arrange(desc(total_awards))
-    
-    agency_key_df$agency_code <- as.numeric(agency_key_df$agency_code)
-    
-    agency_key <- agency_key_df
-    
-    agency_key
-    
-
-
-    
+  
 ## Output the plot and data table to the "Download" tab.     
     
-    output$table1 <- DT::renderDT(agency_key, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE)
+    output$table1 <- DT::renderDT(agency_key, options = list(pageLength = 3, lengthMenu = c(3, 6, 10), scrollX = TRUE)
                                     )
     output$plot1 <- renderPlot({
       agency_key_plot <- ggplot(agency_key, aes(x = agency_name, y = total_awards, fill = agency_name))
@@ -306,14 +310,23 @@ govt_spending <-function(agency_name = "Department of Defense", report = "Budget
 #  })
 ###  ^^^  Attempt to create parameter inputs for `agency_name` and `report` into `govt_spending`  ^^^ ###    
     
-    govt_spending("Department of Defense", "Budgetary Resources")
+    govt_spending()
 
     output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE)
+    )
+    
+    output$downloadData <- downloadHandler(
+      filename = "test.csv",
+      content = function(file) {
+        write.csv(endpoint_df, file, row.names = FALSE)
+      }
     )
     
 #  Generate code for the "Explore" tab. 
 
 ##  Generate the combined data set of all 10 Departments that will be used to cross-analyze their financials. 
+    
+    
 
 ##  Generate graph/table of the data.      
 
