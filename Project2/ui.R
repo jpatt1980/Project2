@@ -9,6 +9,9 @@ library(scales)
 library(shinydashboard)
 
 
+# Create the sidebar for the dashBoard
+
+
 sidebar <- dashboardSidebar(
   width = 250,
   sidebarMenu(
@@ -17,6 +20,10 @@ sidebar <- dashboardSidebar(
     menuItem("Data Exploration", icon = icon("chart-simple"), tabName = "exploration")
   )
 )
+
+
+# Create the body of the dashBoard
+
 
 body <- dashboardBody(
   tabItems(
@@ -47,7 +54,7 @@ body <- dashboardBody(
             
             h4("Tabs:"),
             p(h6("The 'Data Download' tab provides a summary graphic and data table for comparison of spending across the ten agencies `USA Spending` reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
-            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies with the three highest number of awards given. ")),
+            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies with the three highest total number of awards given.")),
             br()
         ), # <--- End of About Tab code
     
@@ -65,10 +72,10 @@ body <- dashboardBody(
         # Generate slider that will adust the y-axis of the `agency_key` plot
           column(width = 12, 
             box(width = NULL, height = 96, solidHeader = TRUE,
-              sliderInput("slider", "# of Awards Granted:", 0, 2500000, 2500000)
+              sliderInput("slider", label = "# of Awards Granted:", min = 0, max = 2500000, value = 2500000)
             )
             ),
-        
+            
         # Generate data table associated with `agency_key` data set
           column(width = 12, 
             box(title = "Awards Granted per Agency", width = NULL, solidHeader = TRUE,
@@ -80,73 +87,74 @@ body <- dashboardBody(
           # Generate parameter for `agency_name` entry
             box(
               "Select Federal Department",
-              selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), selected = "Department of Defense")
-            ),
+              selectInput("dept", 
+                          label = "Federal Department", 
+                          choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), 
+                          selected = "Department of Defense"),
             
           # Generate parameter for `report` entry
-            box(
               "Select Financial Area",
-              selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
-            ), 
+              selectInput("report_area1", 
+                          label = "Financial Area", 
+                          choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
+                          selected = "Program Activity"),
+              
+              actionButton("submit1", "Submit")
+            ),
           
         # Generate data table associated with `govt_spending` created data set
           column(width = 12,
             box(title = "Department Financial Report",  width = NULL, solidHeader = TRUE,
              DT::DTOutput('table2'),
-             downloadButton("downloadData", "Download")
+             downloadButton("downloadData1", "Download") # <-- Generates download for data table
                )
           ),
-        
-        # Generate downolad for data table
-          
+
 )
-    ), # <--- End of Download Tab code 
+    ), # <-- End of "Download" Tab Item
   
   
     tabItem(tabName = "exploration",
             h2("Data Exploration"),
       fluidRow(
-#          box(
-#            "Select Federal Department",
-#            selectInput("dept", "Federal Department", choices = c("Department of Defense", "Department of Agriculture", "General #Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security #Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", #"Railroad Retirement Board"), selected = "Department of Defense")
-#            ),
-#          
           box(
             "Select Financial Area",
-            selectInput("report_area", "Financial Area", choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), selected = "Program Activity")
+            selectInput("report_area2", 
+                        label = "Financial Area", 
+                        choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
+                        selected = "Program Activity")
           ), 
           
           column(width = 12,
                  box(width = NULL, solidHeader = TRUE,
-                     plotOutput("plot2", height = 200)
+                     plotOutput("plot2", height = 500)
                  )
           ), 
           
           column(width = 12,
                  box(width = NULL, solidHeader = TRUE,
-                     plotOutput("plot3", height = 200)
+                     plotOutput("plot3", height = 500)
                  )
           ), 
           
           column(width = 12,
                  box(title = "Combined Financial Report",  width = NULL, solidHeader = TRUE,
                      DT::DTOutput('table3'),
-                     downloadButton("downloadData", "Download")
+                     downloadButton("downloadData2", "Download")
                  )
           ), # <-- end of 
 
               ) # <- End of Exploration Fluid Row
     )  # end of Exploration Tab Code
-) # <- end of tabItems code
-) # <- end of dashboardBody code
+) # <-- end of tabItems code
+) # <-- end of dashboardBody code
 
 
-
-
-# Put them together into a dashboardPage
+# Create the dashboardPage
 dashboardPage(
   skin = "red",
   dashboardHeader(title = "US Fed Dept Spending", titleWidth = 250),
   sidebar,
   body
 )
+
