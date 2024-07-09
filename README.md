@@ -28,6 +28,7 @@
 
 ### Copy & Paste code
 
-> The shiny::runGitHub() code that we can copy and paste into RStudio to run your app
+> shiny::runGitHub("Project2", "jpatt1980", subdir = "/Project2")
+
 
 
