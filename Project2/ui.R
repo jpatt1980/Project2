@@ -7,7 +7,8 @@ library(tidyverse)
 library(readr)
 library(ggplot2)
 library(dplyr)
-library(scales) 
+library(scales)
+library(treemapify)
 library(shinydashboard)
 
 

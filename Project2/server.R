@@ -8,8 +8,8 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 library(scales)
-library(treemap)
-library(RColorBrewer)
+library(treemapify)
+library(shinydashboard)
 
 
 #####     Create the background code for the data download and exploration tabs     #####
