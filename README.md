@@ -6,19 +6,24 @@
 
 ### The application and it's purpose
 
-> Brief description of the app and its purpose.
+> The purpose of this app is to allow the user to summarize federal department spending information of ten department agencies as reported by USASpending.gov. 
 
 ### R Packages required
 
-> A list of packages needed to run the app.
-tidyverse, 
-
+> The R packages requried to run this app are `tidyverse`, `readr`, `ggplot2`, `dplyr`, `scales`, and `treemapify`.
 
 ## Package Installation
 
-> A line of code that would install all the packages used (so we can easily grab that and run it prior to running your app).
+> The code required to run the app is:
 
-install.package("tidyverse"")
+> install.packages("tidyverse"")
+> install.packages("readr")
+> install.packages("ggplot2")
+> install.packages("dplyr")
+> install.packages("scales")
+> install.packages("treemapify")
+
+
 
 
 ### Copy & Paste code
