@@ -1,4 +1,6 @@
 ---
+title: "Project 2 code development"
+author: "Jason M. Pattison, ST 588-651 Summer 1 2024"
 output: html_document
 editor_options: 
   chunk_output_type: console
@@ -9,8 +11,8 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 library(scales)
-library(treemap)
-library(RColorBrewer)
+library(treemapify)
+
 
 ```
 
@@ -742,23 +744,24 @@ else if(endpoint %in% "object_class") {
       
       print(combined_plot1)
       
-      combined_plot2 <- treemap(combined_df, 
-                                title="Award Recepients by Agency", 
-                                index= c("agency_name", "obligation_name"),
-                                vSize="obligated_amount",
-                                type="index",
-                                palette = "BuPu",
-                                fontsize.labels = c(15, 12),
-                                fontcolor.labels = c("#CC0000", "#000000"),
-                                bg.labels = c("transparent"),
-                                align.labels = list(
-                                  c("center", "center"),
-                                  c("center", "bottom")
-                                ),
-                                overlap.labels = 0.5,
-                                inflate.labels = FALSE)
+      combined_df_tree<- ggplot(combined_df, aes(area=obligated_amount, fill = agency_name, label=obligation_name, subgroup=obligation_name)) 
+      
+      combined_plot2 <<- combined_df_tree+
+        geom_treemap(layout="squarified") +
+        geom_treemap_text(place="center", size=12) +
+        labs(title="Award Recepients by Agency") +
+        scale_fill_discrete(name="Agency")
       
       print(combined_plot2)
+      
+
+      newDf <<- combined_df |>
+        select(obligation_name, agency_name)
+      
+      
+      conTable = table(newDf)
+      
+      print(conTable)
       
       
 }  ###  <-- end of `Obligation Type` code
@@ -910,7 +913,11 @@ else if(endpoint %in% "program_activity") {
 
 }  ###  <-- end of `combined_agency_spending` function
 
-combined_agency_spending()
+
+# "Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"
+
+combined_agency_spending("Obligation Type")
+
 ```
 
 

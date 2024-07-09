@@ -1,5 +1,7 @@
-## Project 2
-## Jason Pattison, ST 588-601 SUM I 2024
+#---
+#title: "Project 2 - server.R"
+#author: "Jason M. Pattison, ST 588-651 Summer 1 2024"
+#---
 
 library(tidyverse)
 library(readr)
@@ -504,21 +506,13 @@ combined_agency_spending <- function(report = "Obligation Type") {
     
     print(combined_plot1)
     
-    combined_plot2 <<- treemap(combined_df, 
-                              title="Award Recepients by Agency", 
-                              index= c("agency_name", "obligation_name"),
-                              vSize="obligated_amount",
-                              type="index",
-                              palette = "BuPu",
-                              fontsize.labels = c(15, 12),
-                              fontcolor.labels = c("#CC0000", "#000000"),
-                              bg.labels = c("transparent"),
-                              align.labels = list(
-                                c("center", "center"),
-                                c("center", "bottom")
-                              ),
-                              overlap.labels = 0.5,
-                              inflate.labels = FALSE)
+    combined_df_tree<- ggplot(combined_df, aes(area=obligated_amount, fill = agency_name, label=obligation_name, subgroup=obligation_name)) 
+    
+    combined_plot2 <<- combined_df_tree+
+      geom_treemap(layout="squarified") +
+      geom_treemap_text(place="center", size=12) +
+      labs(title="Award Recepients by Agency") +
+      scale_fill_discrete(name="Agency")
     
     print(combined_plot2)
     
@@ -697,16 +691,8 @@ combined_agency_spending <- function(report = "Obligation Type") {
     
     
     ## Output the data table and plot based on user selections of "Federal Department" and "Financial Area"
-    
-    gov_spend_params <- eventReactive(input$submit1, {
-      input$dept
-      input$report_area1
-    })
-    
-    
 
-    output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE))
-
+        
 ############################################################################################################
 #   Attempted to model this off of an example from "mastering-shiny.org", received the error that follows it:  
 #
@@ -725,7 +711,13 @@ combined_agency_spending <- function(report = "Obligation Type") {
 #    less than helpful when troubleshooting this. 
 #    
 ###############################################################################################################
-        
+
+    
+    govt_spending()
+    
+    
+    output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE))        
+
     output$downloadData1 <- downloadHandler(
       filename = "Department Financial Report.csv",
       content = function(file) {
@@ -733,14 +725,14 @@ combined_agency_spending <- function(report = "Obligation Type") {
       }
     )
     
-###  Generate code for the "Explore" tab. 
+#################### Generate code for the "Explore" tab ####################
 
 ##  Generate the combined data set of all 10 Departments that will be used to cross-analyze their financials. 
+
     
     combined_agency_spending()  ### Using default values for the function while testing ways to get `input$` to work
     
-    output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=2, lengthMenu=c(3, 6, 10), scrollX=TRUE)
-                                  )
+    output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=2, lengthMenu=c(3, 6, 10), scrollX=TRUE))
 
     output$downloadData2 <- downloadHandler(
       filename = "Combined Financial Report.csv",

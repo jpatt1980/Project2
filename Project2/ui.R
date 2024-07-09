@@ -1,5 +1,7 @@
-## Project 2
-## Jason Pattison, ST 588-601 SUM I 2024
+#---
+#title: "Project 2 - ui.R"
+#author: "Jason M. Pattison, ST 588-651 Summer 1 2024"
+#---
 
 library(tidyverse)
 library(readr)
@@ -32,7 +34,7 @@ body <- dashboardBody(
             br(),
             
             h4("Purpose:"),
-            h6("The purpose of this app is to allow the user to summarize federal department spending information of the following departments as reported by `USA Spending`:"),
+            h6("The purpose of this app is to allow the user to summarize federal department spending information of the following departments as reported by", strong("USASpending.gov"),":"),
             h6(tags$ul(
               tags$li("Department of Defense"),
               tags$li("Department of Agriculture"),
@@ -47,14 +49,14 @@ body <- dashboardBody(
             br(),
   
             h4("Data Source:"),
-            h6("The data being summarized can be found at 'https://api.usaspending.gov/docs/endpoints'."),
+            h6("The data being summarized is located at",a("https://api.usaspending.gov/docs/endpoints", href="https://api.usaspending.gov/docs/endpoints"), ". More information about the data can be found at", strong(a("USASpending.gov", href="https://www.usaspending.gov/about"),"")),
             tags$img(src = "https://files.usaspending.gov/django_static/img/logo.png"),
             br(),
             br(),
             
             h4("Tabs:"),
-            p(h6("The 'Data Download' tab provides a summary graphic and data table for comparison of spending across the ten agencies `USA Spending` reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
-            p(h6("The 'Data Exploration' tab allows the user to select the different reports for comparison of the agencies with the three highest total number of awards given.")),
+            p(h6("The", strong("Data Download"), "tab provides a summary graphic and data table for comparison of spending across the ten agencies", strong("USA Spending"), "reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
+            p(h6("The", strong("Data Exploration"), "tab allows the user to select the different reports for comparison of the agencies with the three highest total number of awards given.")),
             br()
         ), # <--- End of About Tab code
     
