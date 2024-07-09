@@ -139,7 +139,15 @@ body <- dashboardBody(
                      plotOutput("plot3", height = 500)
                  )
           ), 
-          
+           
+          column(width = 12,
+                 box(width = NULL, solidHeader=TRUE,
+                     tableOutput("contingency")
+                   
+                 )
+            
+          ), 
+         
           column(width = 12,
                  box(title = "Combined Financial Report",  width = NULL, solidHeader = TRUE,
                      DT::DTOutput('table3'),
