@@ -371,7 +371,7 @@ library(shinydashboard)
         scale_y_continuous(name="$ Amount Spent", label=dollar) +
         scale_x_continuous(name="Budget Year") +
         labs(title="$ Amount Spent per Budget Year") +
-        guides(fill = FALSE) 
+        guides(fill = "none") 
     
       print(combined_plot2)
     
@@ -739,7 +739,7 @@ library(shinydashboard)
       
       report <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
       
-      updateSelectInput(session, "report_area2", choices = report)
+      updateSelectizeInput(session, "report_area2", choices = report)
       
       combined_agency_spending(input$report_area2)
     })    

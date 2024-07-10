@@ -102,7 +102,7 @@ body <- dashboardBody(
               selectInput("report_area1", 
                           label = "Financial Area", 
                           choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
-                          selected = "Program Activity")
+                          selected = "Budgetary Resources")
             ),
         
         # Generate data table associated with `govt_spending` created data set
@@ -155,7 +155,7 @@ body <- dashboardBody(
 
 
 # Create the dashboardPage
-ui <- dashboardPage(
+ dashboardPage(
   skin = "red",
   dashboardHeader(title = "US Fed Dept Spending", titleWidth = 250),
   sidebar,
