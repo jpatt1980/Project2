@@ -3,6 +3,8 @@
 #author: "Jason M. Pattison, ST 588-651 Summer 1 2024"
 #---
 
+
+# establish the libraries for use throughout the program
 library(tidyverse)
 library(readr)
 library(ggplot2)
@@ -12,23 +14,25 @@ library(treemapify)
 library(shinydashboard)
 
 
-# Create the sidebar for the dashBoard
+# Create the dashboardPage
+ui <- dashboardPage(
+  skin = "red",
+  dashboardHeader(title = "US Fed Dept Spending", titleWidth = 250),
 
 
-sidebar <- dashboardSidebar(
-  width = 250,
-  sidebarMenu(
-    menuItem("About", icon = icon("lightbulb"), tabName = "about"),
-    menuItem("Data Download", icon = icon("file"), tabName = "download"),
-    menuItem("Data Exploration", icon = icon("chart-simple"), tabName = "exploration")
-  )
-)
+# Create the sidebar for the dashBoard  
+  dashboardSidebar(
+     width = 250,
+    sidebarMenu(
+      menuItem("About", icon = icon("lightbulb"), tabName = "about"),
+      menuItem("Data Download", icon = icon("file"), tabName = "download"),
+      menuItem("Data Exploration", icon = icon("chart-simple"), tabName = "exploration")
+    ) 
+  ),
 
 
 # Create the body of the dashBoard
-
-
-body <- dashboardBody(
+dashboardBody(
   tabItems(
     tabItem(tabName = "about",
             h2("About tab content"),
@@ -64,7 +68,8 @@ body <- dashboardBody(
     
     tabItem(tabName = "download",
             h2("Data Download"),      
-        
+            br(), 
+            
         fluidRow(
         # Generate column plot from `agency_key` data set  
           column(width = 12,
@@ -72,13 +77,16 @@ body <- dashboardBody(
               plotOutput("plot1", height = 200)
             )
             ), # <- end of `agency_key` plot
+          br(), 
+          br(),
           
         # Generate slider that will adust the y-axis of the `agency_key` plot
+          h4("Use the slider to adjust the # of Awards Granted"),
           column(width = 12, 
             box(width = NULL, height = 96, solidHeader = TRUE,
               sliderInput("slider", label = "# of Awards Granted:", min = 0, max = 2500000, value = 2500000)
             )
-            ),
+          ),
             
         # Generate data table associated with `agency_key` data set
           column(width = 12, 
@@ -88,7 +96,6 @@ body <- dashboardBody(
           ),
         
         # Generate selection parameter options for use in student generated function `govt_spending`
-          
             box(
               # Generate parameter for `agency_name` entry  
               "Select Federal Department",
@@ -104,6 +111,8 @@ body <- dashboardBody(
                           choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
                           selected = "Obligation Type")
             ),
+        
+            strong(h4("Seleciton boxes for Federal Depratment and Financial Area are currently not operational. They reset themselves to the default values without prompting.")),
         
         # Generate data table associated with `govt_spending` created data set
           column(width = 12,
@@ -150,16 +159,14 @@ body <- dashboardBody(
 
               ) # <- End of Exploration Fluid Row
     )  # end of Exploration Tab Code
+
+    
 ) # <-- end of tabItems code
+
+
 ) # <-- end of dashboardBody code
 
 
-# Create the dashboardPage
- dashboardPage(
-  skin = "red",
-  dashboardHeader(title = "US Fed Dept Spending", titleWidth = 250),
-  sidebar,
-  body
-)
+) ##### <- end of app
 
 
