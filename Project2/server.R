@@ -45,7 +45,7 @@ library(shinydashboard)
 #  This function will be used to generate department financial reports by type to be used on the
 #  "Data Download" page
   
-  govt_spending <-function(agency_name = "Department of Defense", report = "Program Activity") {
+  govt_spending <-function(agency_name, report) {
   
   #  First, we need to convert our agency name into it's associated agency code. The agency codes 
   #  are required inputs for the URLs
@@ -83,37 +83,10 @@ library(shinydashboard)
     } else if(agency_name %in% "Railroad Retirement Board") {
       agency_code = "060"
     } else {print ("Error: Incorrect Agency Selection")}
-
-
-########## 
-#
-#  I attempted to run the below logic to "vector" the output, ran into the same error message
-#  that occurred  when using the "else if" logic above
-#    
-#    if_else(agency_name %in% "Department of Defense", agency_code <- "097",
-#      if_else(agency_name %in% "Department of Agriculture", agency_code <- "012",
-#        if_else(agency_name %in% "General Services Administration", agency_code <- "047",
-#          if_else(agency_name %in% "Department of Housing and Urban Development", agency_code <- "086",
-#            if_else(agency_name %in% "Department of Veterans Affairs", agency_code <- "036", 
-#              if_else(agency_name %in% "Social Security Administration", agency_code <- "028",
-#                if_else(agency_name %in% "Department of Health and Human Services", agency_code <- "075",
-#                  if_else(agency_name %in% "Federal Communications Commission", agency_code <- "027", 
-#                    if_else(agency_name %in% "Small Business Administration", agency_code <- "073", 
-#                      if_else(agency_name %in% "Railroad Retirement Board", agency_code = "060", print ("Error: Incorrect Agency #Selection")
-#                              ))))))))))
-#
-##########
   
   
   #  With the agency's name associated with its code, we will now use conditional logic to 
   #  generate the remaining portion of the report URL endpoints. 
-  
-  
-##########
-#
-#  Same "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments" message as above
-#
-##########
 
     if(report %in% "Budgetary Resources") {
       endpoint <- "budgetary_resources"
@@ -128,19 +101,6 @@ library(shinydashboard)
     } else {print("Error: Incorrect Report selection")}
 
 
-##########
-#
-#  Same "Error in match(x, table, nonmatch = 0L): 'match' requires vector arguments" message as above
-#    
-#  if_else(report %in% "Budgetary Resources", endpoint <- "budgetary_resources", 
-#   if_else(report %in% "Federal Account", endpoint <- "federal_account", 
-#      if_else(report %in% "Obligation Type", endpoint <- "object_class", 
-#        if_else(report %in% "Award Obligations", endpoint <- "obligations_by_award_category", 
-#          if_else(report %in% "Program Activity", endpoint <- "program_activity", print ("Error: Incorrect Report Selection"))
-#        )))) 
-#
-##########
-  
   #  Now that we have the conditional logic statements generated, we will use them to generate
   #  the API URLs and parse the API data that will be used to generate our data tables and
   #  graphics.
@@ -299,21 +259,21 @@ library(shinydashboard)
   
 ##########  Generate function `combined_agency_spending` ##########
 
-  combined_agency_spending <- function(report = "Obligation Type") {
+  combined_agency_spending <- function(report2) {
 
     # Here we are going to use the same conditional logic to generate the endpoints for the URL.
     # We are not using the conditional logic for the departments because the data set will have
     # combined data for the top 3 agencies with the highest number of award obligations. 
     
-    if(report %in% "Budgetary Resources") {
+    if(report2 %in% "Budgetary Resources") {
       endpoint <- c("budgetary_resources")
-    } else if(report %in% "Federal Account") {
+    } else if(report2 %in% "Federal Account") {
       endpoint <- c("federal_account")
-    } else if(report %in% "Obligation Type") {
+    } else if(report2 %in% "Obligation Type") {
       endpoint <- c("object_class")
-    } else if(report %in% "Award Obligations") {
+    } else if(report2 %in% "Award Obligations") {
       endpoint <- c("obligations_by_award_category")
-    } else if(report %in% "Program Activity") {
+    } else if(report2 %in% "Program Activity") {
       endpoint <- c("program_activity")
     } else {
       print ("Error: Incorrect Report Selection")
@@ -555,7 +515,8 @@ library(shinydashboard)
       print(combined_plot2)
     
       newDf <- combined_df |>
-        select(obligation_name, agency_name)
+        group_by(agency_name) |>
+        summarize(count=n())
 
       conTable <<- table(newDf)
     
@@ -710,9 +671,10 @@ library(shinydashboard)
 
 ############### Start of ShinyDashboard server function ###############
 
-  server <- function(input, output, session) {
-  
-    
+
+    server <- function(input, output, session) {
+
+
 ########## "Data Download" tab ##########
   
   #  Output the "Awards Granted per Agency" plot, slider, and data table for display on
@@ -733,35 +695,25 @@ library(shinydashboard)
     })
     
     
-  #  Output the data table and plot based on user selections of "Federal Department" and "Financial Area"
-  #  user selected inputs
-    
-    
-####################
-#   
-#   Attempted to model the below attempt based on an example from "mastering-shiny.org", 
-#   I received the logic error described in the `govt_spending` function code.
-#
-#    output$table2 <- DT::renderDT({
-#      agency_name <- reactive(input$dept)
-#      report1 <- reactive(input$report_area1)
-#      govt_spending(agency_name, report1)
-#    }, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE))
-#    
-#      Warning: Error in match: 'match' requires vector arguments
-#        106: %in%
-#        105: govt_spending [C:\Users\jpatt\OneDrive\Desktop\558-601\Project2\Project2/server.R#50]
-#        104: exprFunc [C:\Users\jpatt\OneDrive\Desktop\558-601\Project2\Project2/server.R#719]
-#    
-#    I've received this error multiple times, cannot seem to find a "fix" to it online. The Shiny website is
-#    less than helpful when troubleshooting this. 
-#    
-####################
-
+  # Output the data table and plot based on user selections of "Federal Department" and "Financial Area"
+  # user selected inputs
   # Use the `govt_spending` function to generate data table `endpoint_df` based on the user selected input, 
   # for `agency_name` and `report`, then download the data table to a ".csv" file. 
     
-    govt_spending()  # <-- using default values to test the application outputs of data tables and plots
+    
+    
+    update <- observe({
+      
+      dept <- c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board")
+      
+      report <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
+      
+      updateSelectInput(session, "dept", choices = dept)
+      
+      updateSelectInput(session, "report_area1", choices = report)
+      
+      govt_spending(input$dept, input$report_area1)
+      })
     
     output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE))        
 
@@ -780,7 +732,17 @@ library(shinydashboard)
   # Generate the report data set that combines the information from the three agencies with the highest total number of 
   # awards rendered. Each report type has pre-selected data summaries based on the data available. . 
 
-    combined_agency_spending() # <-- using default values to test the application outputs of data tables and plots
+    
+#    "Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"
+    
+    update2 <- observe({
+      
+      report <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
+      
+      updateSelectInput(session, "report_area2", choices = report)
+      
+      combined_agency_spending(input$report_area2)
+    })    
     
     output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=2, lengthMenu=c(3, 6, 10), scrollX=TRUE))
 
@@ -795,7 +757,7 @@ library(shinydashboard)
     
     output$plot3 <- renderPlot(combined_plot2)
     
-    output$contingency <-  renderTable(conTable)
+    output$contingency <-  DT::renderDT(conTable)
 
 ########## End of "Exploration" tab ##########
 

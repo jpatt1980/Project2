@@ -41,7 +41,6 @@ agency_key_plot +
   labs(x = "Agency", y = "# of Awards Granted") +
   coord_cartesian(ylim = c(0, 2000000))
   
-
 ```
 
 

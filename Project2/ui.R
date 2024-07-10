@@ -58,8 +58,9 @@ body <- dashboardBody(
             h4("Tabs:"),
             p(h6("The", strong("Data Download"), "tab provides a summary graphic and data table for comparison of spending across the ten agencies", strong("USA Spending"), "reported on. This tab also allows the user to download the budget and report data for the departments separately.")),
             p(h6("The", strong("Data Exploration"), "tab allows the user to select the different reports for comparison of the agencies with the three highest total number of awards given.")),
-            br()
-        ), # <--- End of About Tab code
+            br(), 
+            
+        ), ########## <--- End of About Tab code
     
     tabItem(tabName = "download",
             h2("Data Download"),      
@@ -83,28 +84,27 @@ body <- dashboardBody(
           column(width = 12, 
             box(title = "Awards Granted per Agency", width = NULL, solidHeader = TRUE,
               DT::DTOutput('table1')
-               )
-           ), 
+               ),
+          ),
         
         # Generate selection parameter options for use in student generated function `govt_spending`
-          # Generate parameter for `agency_name` entry
+          
             box(
+              # Generate parameter for `agency_name` entry  
               "Select Federal Department",
               selectInput("dept", 
                           label = "Federal Department", 
                           choices = c("Department of Defense", "Department of Agriculture", "General Services Administration", "Department of Housing and Urban Development", "Department of Veterans Affairs", "Social Security Administration", "Department of Health and Human Services", "Federal Communications Commission", "Small Business Administration", "Railroad Retirement Board"), 
                           selected = "Department of Defense"),
             
-          # Generate parameter for `report` entry
+              # Generate parameter for `report` entry
               "Select Financial Area",
               selectInput("report_area1", 
                           label = "Financial Area", 
                           choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
-                          selected = "Program Activity"),
-              
-              actionButton("submit1", "Submit")
+                          selected = "Program Activity")
             ),
-          
+        
         # Generate data table associated with `govt_spending` created data set
           column(width = 12,
             box(title = "Department Financial Report",  width = NULL, solidHeader = TRUE,
@@ -113,8 +113,9 @@ body <- dashboardBody(
                )
           ),
 
-)
-    ), # <-- End of "Download" Tab Item
+        ) ### <- end of fluid row
+
+    ), ########## End of "Download" Tab ##########
   
   
     tabItem(tabName = "exploration",
@@ -124,7 +125,7 @@ body <- dashboardBody(
             "Select Financial Area",
             selectInput("report_area2", 
                         label = "Financial Area", 
-                        choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
+                        choices =  c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
                         selected = "Program Activity")
           ), 
           
@@ -141,19 +142,11 @@ body <- dashboardBody(
           ), 
            
           column(width = 12,
-                 box(width = NULL, solidHeader=TRUE,
-                     tableOutput("contingency")
-                   
-                 )
-            
-          ), 
-         
-          column(width = 12,
                  box(title = "Combined Financial Report",  width = NULL, solidHeader = TRUE,
                      DT::DTOutput('table3'),
                      downloadButton("downloadData2", "Download")
                  )
-          ), # <-- end of 
+          ) # <-- end of 
 
               ) # <- End of Exploration Fluid Row
     )  # end of Exploration Tab Code
@@ -162,10 +155,11 @@ body <- dashboardBody(
 
 
 # Create the dashboardPage
-dashboardPage(
+ui <- dashboardPage(
   skin = "red",
   dashboardHeader(title = "US Fed Dept Spending", titleWidth = 250),
   sidebar,
   body
 )
+
 
