@@ -514,13 +514,6 @@ library(shinydashboard)
     
       print(combined_plot2)
     
-      newDf <- combined_df |>
-        group_by(agency_name) |>
-        summarize(count=n())
-
-      conTable <<- table(newDf)
-    
-      print(conTable)
     
     } #####  <- end of "object_class" 
   
@@ -756,8 +749,6 @@ library(shinydashboard)
     output$plot2 <- renderPlot(combined_plot1)
     
     output$plot3 <- renderPlot(combined_plot2)
-    
-    output$contingency <-  DT::renderDT(conTable)
 
 ########## End of "Exploration" tab ##########
 
