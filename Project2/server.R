@@ -708,14 +708,14 @@ library(shinydashboard)
       
       report <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
       
-      updateSelectInput(session, "dept", choices = dept)
+      updateSelectInput(session, "dept", choices = dept, selected = "Department of Defense")
       
-      updateSelectInput(session, "report_area1", choices = report)
+      updateSelectInput(session, "report_area1", choices = report, selected = "Program Activity")
       
       govt_spending(input$dept, input$report_area1)
       })
     
-    output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 2, lengthMenu = c(2, 4, 10), scrollX = TRUE))        
+    output$table2 <- DT::renderDT(endpoint_df, options = list(pageLength = 5, lengthMenu = c(2, 5, 10), scrollX = TRUE))        
 
     output$downloadData1 <- downloadHandler(
       filename = "Department Financial Report.csv",
@@ -739,12 +739,12 @@ library(shinydashboard)
       
       report <- c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity")
       
-      updateSelectizeInput(session, "report_area2", choices = report)
+      updateSelectizeInput(session, "report_area2", choices = report, selected = "Obligation Type")
       
       combined_agency_spending(input$report_area2)
     })    
     
-    output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=2, lengthMenu=c(3, 6, 10), scrollX=TRUE))
+    output$table3 <- DT::renderDT(combined_df, options=list(pageLenght=5, lengthMenu=c(3, 5, 10), scrollX=TRUE))
 
     output$downloadData2 <- downloadHandler(
       filename = "Combined Financial Report.csv",

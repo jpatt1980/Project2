@@ -102,7 +102,7 @@ body <- dashboardBody(
               selectInput("report_area1", 
                           label = "Financial Area", 
                           choices = c("Budgetary Resources", "Federal Account", "Obligation Type", "Award Obligations", "Program Activity"), 
-                          selected = "Budgetary Resources")
+                          selected = "Obligation Type")
             ),
         
         # Generate data table associated with `govt_spending` created data set
